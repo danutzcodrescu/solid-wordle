@@ -8,10 +8,10 @@ ports:
 
 tasks:
   - name: solid
-    before: |
-      printf "\n[settings]\napi_key = $WAKATIME\n" > ~/.wakatime.cfg
     init: yarn install
-    command: yarn dev
+    command: |
+      echo -e "[settings]\napi_key = $WAKATIME" > ~/.wakatime.cfg
+      yarn dev
 
 vscode:
   extensions:
@@ -31,6 +31,3 @@ github:
   prebuilds:
     pullRequests: false
     addCheck: false
-
-
-
