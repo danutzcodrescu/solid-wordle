@@ -8,10 +8,11 @@ ports:
 
 tasks:
   - name: solid
-    init: yarn install
+    init: pnpm install
     command: |
+      pnpm add -g pnpm
       echo -e "[settings]\napi_key = $WAKATIME" > ~/.wakatime.cfg
-      yarn dev
+      pnpm dev
 
 vscode:
   extensions:
