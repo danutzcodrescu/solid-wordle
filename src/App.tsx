@@ -1,8 +1,14 @@
 import type { Component } from 'solid-js';
+import { GridContainer } from './Grid/Container';
+import { WordleProvider } from './store';
 
 const App: Component = () => {
   return (
-    <p class="text-4xl text-green-700 text-center py-20">Hello tailwind!</p>
+    <div class="bg-black w-screen h-screen text-gray-300 ">
+      <WordleProvider>
+        <GridContainer />
+      </WordleProvider>
+    </div>
   );
 };
 
