@@ -1,5 +1,7 @@
-import { Component, createEffect, createSignal, For } from 'solid-js';
+import { Motion } from '@motionone/solid';
+import { Component, createEffect, createSignal, For, Show } from 'solid-js';
 import { useWordleState, Validation } from '../store';
+import { spring } from 'motion';
 
 interface Props {
   rowIndex: number;
@@ -15,6 +17,7 @@ export const WordleRow: Component<Props> = (props) => {
     'no-match',
   ]);
   const [word, setWord] = createSignal('');
+  const [key, setKey] = createSignal<string | undefined>(undefined);
   createEffect(() => {
     const callback = (e: KeyboardEvent) => {
       if (e.code === 'Enter' && word().length === 5) {
@@ -26,6 +29,7 @@ export const WordleRow: Component<Props> = (props) => {
       if (/^[a-z]$/i.test(e.key.replace(/^Key/i, ''))) {
         setWord((prev) => prev + e.key);
       }
+      setKey(e.code);
     };
     if (props.rowIndex === state.activeRow) {
       document.addEventListener('keyup', callback);
@@ -34,43 +38,57 @@ export const WordleRow: Component<Props> = (props) => {
     }
   });
   return (
-    <div class="grid grid-cols-5 uppercase">
+    <p class="mb-1.5 grid grid-cols-5 gap-1.5 text-4xl font-bold uppercase">
       <For each={validated()}>
         {(item, index) => (
-          <div
-            classList={{
-              'h-24': true,
-              '[&:not(:first-child)]:border-l-2': true,
-              '[&:not(:first-child)]:border-gray-400': true,
-              flex: true,
-              'justify-center': true,
-              'items-center': true,
-              'font-bold': true,
-              'text-7xl': true,
+          <Show
+            when={word().length - 1 === index() && key() !== 'Backspace'}
+            fallback={
+              <span
+                classList={{
+                  'h-14': true,
+                  flex: true,
+                  'justify-center': true,
+                  'items-center': true,
+                  'font-bold': true,
+                  'border-gray-600': !!word()[index()] === false,
+                  'border-gray-400': !!word()[index()] === true,
+                  'border-2': true,
 
-              'bg-gray-400':
-                (state.activeRow > props.rowIndex ||
-                  (state.status === 'validation' &&
-                    props.rowIndex === state.activeRow)) &&
-                item === 'no-match',
+                  'bg-gray-400':
+                    (state.activeRow > props.rowIndex ||
+                      (state.status === 'validation' &&
+                        props.rowIndex === state.activeRow)) &&
+                    item === 'no-match',
 
-              'bg-green-700':
-                (state.activeRow > props.rowIndex ||
-                  (state.status === 'validation' &&
-                    props.rowIndex === state.activeRow)) &&
-                item === 'match',
+                  'bg-green-700':
+                    (state.activeRow > props.rowIndex ||
+                      (state.status === 'validation' &&
+                        props.rowIndex === state.activeRow)) &&
+                    item === 'match',
 
-              'bg-amber-300':
-                (state.activeRow > props.rowIndex ||
-                  (state.status === 'validation' &&
-                    props.rowIndex === state.activeRow)) &&
-                item === 'contained',
-            }}
+                  'bg-amber-300':
+                    (state.activeRow > props.rowIndex ||
+                      (state.status === 'validation' &&
+                        props.rowIndex === state.activeRow)) &&
+                    item === 'contained',
+                }}
+              >
+                {word()[index()] || ''}
+              </span>
+            }
           >
-            {word()[index()] || ''}
-          </div>
+            <Motion.span
+              class="flex h-14 items-center justify-center border-2 border-gray-400"
+              transition={{ duration: 0.15, easing: spring() }}
+              initial={{ transform: 'scale(1)' }}
+              animate={{ transform: ['scale(1.15)', 'scale(1)'] }}
+            >
+              {word()[index()]}
+            </Motion.span>
+          </Show>
         )}
       </For>
-    </div>
+    </p>
   );
 };
