@@ -4,7 +4,7 @@ import { WordleProvider } from './store';
 
 const App: Component = () => {
   return (
-    <div class="bg-black w-screen h-screen text-gray-300 ">
+    <div class="h-screen w-screen bg-black text-gray-300 ">
       <WordleProvider>
         <GridContainer />
       </WordleProvider>
