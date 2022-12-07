@@ -1,7 +1,15 @@
 import { Motion } from '@motionone/solid';
-import { Component, createEffect, createSignal, For, Show } from 'solid-js';
-import { useWordleState, Validation } from '../store';
 import { spring } from 'motion';
+import {
+  Component,
+  createEffect,
+  createSignal,
+  For,
+  Match,
+  Switch,
+} from 'solid-js';
+import { ANIMATION_DURATION_VALIDATION } from '../constants';
+import { useWordleState, Validation } from '../store';
 
 interface Props {
   rowIndex: number;
@@ -41,8 +49,7 @@ export const WordleRow: Component<Props> = (props) => {
     <p class="mb-1.5 grid grid-cols-5 gap-1.5 text-4xl font-bold uppercase">
       <For each={validated()}>
         {(item, index) => (
-          <Show
-            when={word().length - 1 === index() && key() !== 'Backspace'}
+          <Switch
             fallback={
               <span
                 classList={{
@@ -52,41 +59,69 @@ export const WordleRow: Component<Props> = (props) => {
                   'items-center': true,
                   'font-bold': true,
                   'border-gray-600': !!word()[index()] === false,
-                  'border-gray-400': !!word()[index()] === true,
-                  'border-2': true,
-
+                  'border-gray-500': !!word()[index()] === true,
+                  'border-2': state.activeRow <= props.rowIndex,
                   'bg-gray-400':
-                    (state.activeRow > props.rowIndex ||
-                      (state.status === 'validation' &&
-                        props.rowIndex === state.activeRow)) &&
-                    item === 'no-match',
+                    state.activeRow > props.rowIndex && item === 'no-match',
 
                   'bg-green-700':
-                    (state.activeRow > props.rowIndex ||
-                      (state.status === 'validation' &&
-                        props.rowIndex === state.activeRow)) &&
-                    item === 'match',
+                    state.activeRow > props.rowIndex && item === 'match',
 
                   'bg-amber-300':
-                    (state.activeRow > props.rowIndex ||
-                      (state.status === 'validation' &&
-                        props.rowIndex === state.activeRow)) &&
-                    item === 'contained',
+                    state.activeRow > props.rowIndex && item === 'contained',
                 }}
               >
                 {word()[index()] || ''}
               </span>
             }
           >
-            <Motion.span
-              class="flex h-14 items-center justify-center border-2 border-gray-400"
-              transition={{ duration: 0.15, easing: spring() }}
-              initial={{ transform: 'scale(1)' }}
-              animate={{ transform: ['scale(1.15)', 'scale(1)'] }}
+            <Match
+              when={
+                state.status === 'validation' &&
+                props.rowIndex === state.activeRow
+              }
             >
-              {word()[index()]}
-            </Motion.span>
-          </Show>
+              <Motion.span
+                class="flex h-14 items-center justify-center"
+                initial={{ transform: 'rotateX(0deg)' }}
+                transition={{
+                  duration: ANIMATION_DURATION_VALIDATION,
+                  easing: spring(),
+                  delay: index() * ANIMATION_DURATION_VALIDATION,
+                }}
+                animate={{
+                  transform: ['rotateX(90deg)', 'rotateX(0deg)'],
+                  border: ['var(--border_width) solid var(--gray)', 'none'],
+                  backgroundColor: [
+                    'var(--gray)',
+                    item === 'match'
+                      ? 'var(--green)'
+                      : item === 'contained'
+                      ? 'var(--yellow)'
+                      : 'var(--gray)',
+                  ],
+                }}
+              >
+                {word()[index()]}
+              </Motion.span>
+            </Match>
+            <Match
+              when={
+                props.rowIndex === state.activeRow &&
+                word().length - 1 === index() &&
+                key() !== 'Backspace'
+              }
+            >
+              <Motion.span
+                class="flex h-14 items-center justify-center border-2 border-gray-500"
+                transition={{ duration: 0.15, easing: spring() }}
+                initial={{ transform: 'scale(1)' }}
+                animate={{ transform: ['scale(1.15)', 'scale(1)'] }}
+              >
+                {word()[index()]}
+              </Motion.span>
+            </Match>
+          </Switch>
         )}
       </For>
     </p>

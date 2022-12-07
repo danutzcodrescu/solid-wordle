@@ -50,7 +50,7 @@ export const WordleProvider: Component<Props> = (props) => {
             activeRow: s.activeRow + 1,
           };
         });
-      }, 5000);
+      }, 2500);
       return word.split('').map((letter, index) => {
         if (wordle[index] === letter) return 'match';
         if (wordle.includes(letter)) return 'contained';
