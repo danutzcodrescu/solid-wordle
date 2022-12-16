@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --gray: theme(colors.gray.500);
+  --green: theme(colors.green.700);
+  --yellow: theme(colors.amber.300);
+  --border_width: theme(borderSpacing.2);
+
+}

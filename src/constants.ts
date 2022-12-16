@@ -1,0 +1,1 @@
+export const ANIMATION_DURATION_VALIDATION = 0.35;
