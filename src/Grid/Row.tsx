@@ -77,6 +77,33 @@ export const WordleRow: Component<Props> = (props) => {
           >
             <Match
               when={
+                props.rowIndex === state.activeRow && state.status === 'win'
+              }
+            >
+              <Motion.span
+                class="flex h-14 items-center justify-center bg-green-700"
+                transition={{
+                  duration: 1,
+                  delay:
+                    index() / 2 !== 0 ? index() * 0.15 : (index() / 2) * 0.35,
+                }}
+                initial={{ transform: 'translateY(0)' }}
+                animate={{
+                  transform: [
+                    'translateY(calc(var(--victory-animation-movement) * -1))',
+                    'translateY(0)',
+                    'translateY(calc(var(--victory-animation-movement) * -1))',
+                    'translateY(0)',
+                    'translateY(calc(var(--victory-animation-movement) * -1))',
+                    'translateY(0)',
+                  ],
+                }}
+              >
+                {word()[index()]}
+              </Motion.span>
+            </Match>
+            <Match
+              when={
                 state.status === 'validation' &&
                 props.rowIndex === state.activeRow
               }
