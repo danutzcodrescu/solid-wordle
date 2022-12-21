@@ -7,5 +7,6 @@
   --green: theme(colors.green.700);
   --yellow: theme(colors.amber.300);
   --border_width: theme(borderSpacing.2);
+  --victory-animation-movement: theme(spacing.4)
 
 }
